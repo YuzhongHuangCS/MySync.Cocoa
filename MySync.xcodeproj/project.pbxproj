@@ -11,6 +11,7 @@
 		1D9C56292A4262D4001C06C7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9C56282A4262D4001C06C7 /* ViewController.swift */; };
 		1D9C562B2A4262D6001C06C7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1D9C562A2A4262D6001C06C7 /* Assets.xcassets */; };
 		1D9C562E2A4262D6001C06C7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1D9C562C2A4262D6001C06C7 /* Main.storyboard */; };
+		1D9C56372A4265CB001C06C7 /* GoogleAPIClientForREST_Drive in Frameworks */ = {isa = PBXBuildFile; productRef = 1D9C56362A4265CB001C06C7 /* GoogleAPIClientForREST_Drive */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D9C56372A4265CB001C06C7 /* GoogleAPIClientForREST_Drive in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,6 +79,9 @@
 			dependencies = (
 			);
 			name = MySync;
+			packageProductDependencies = (
+				1D9C56362A4265CB001C06C7 /* GoogleAPIClientForREST_Drive */,
+			);
 			productName = MySync;
 			productReference = 1D9C56232A4262D4001C06C7 /* MySync.app */;
 			productType = "com.apple.product-type.application";
@@ -105,6 +110,9 @@
 				Base,
 			);
 			mainGroup = 1D9C561A2A4262D4001C06C7;
+			packageReferences = (
+				1D9C56352A4265CB001C06C7 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */,
+			);
 			productRefGroup = 1D9C56242A4262D4001C06C7 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -335,6 +343,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1D9C56352A4265CB001C06C7 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/google-api-objectivec-client-for-rest";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1D9C56362A4265CB001C06C7 /* GoogleAPIClientForREST_Drive */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1D9C56352A4265CB001C06C7 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */;
+			productName = GoogleAPIClientForREST_Drive;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1D9C561B2A4262D4001C06C7 /* Project object */;
 }

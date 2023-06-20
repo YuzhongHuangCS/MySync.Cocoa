@@ -6,6 +6,8 @@
 //
 
 import Cocoa
+import GoogleAPIClientForRESTCore
+import GoogleAPIClientForREST_Drive
 
 class ViewController: NSViewController {
 
