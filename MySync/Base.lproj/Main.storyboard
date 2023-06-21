@@ -792,7 +792,7 @@
                                     </subviews>
                                 </clipView>
                                 <scroller key="horizontalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="YES" id="uSz-Jo-6He">
-                                    <rect key="frame" x="1" y="334" width="798" height="15"/>
+                                    <rect key="frame" x="1" y="324" width="798" height="15"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </scroller>
                                 <scroller key="verticalScroller" hidden="YES" wantsLayer="YES" verticalHuggingPriority="750" horizontal="NO" id="lvE-Be-C8e">
@@ -811,6 +811,9 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system" size="16"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="LoginClicked:" target="XfG-lQ-9wD" id="R6c-gn-eVQ"/>
+                                </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="2Cl-5E-IZe">
                                 <rect key="frame" x="82" y="10" width="79" height="40"/>

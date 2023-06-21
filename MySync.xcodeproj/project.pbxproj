@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1D0B288C2A426EE600D3F7BF /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 1D0B288B2A426EE600D3F7BF /* GoogleSignIn */; };
 		1D9C56272A4262D4001C06C7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9C56262A4262D4001C06C7 /* AppDelegate.swift */; };
 		1D9C56292A4262D4001C06C7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D9C56282A4262D4001C06C7 /* ViewController.swift */; };
 		1D9C562B2A4262D6001C06C7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1D9C562A2A4262D6001C06C7 /* Assets.xcassets */; };
@@ -15,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1D0B288F2A42744700D3F7BF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1D9C56232A4262D4001C06C7 /* MySync.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MySync.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1D9C56262A4262D4001C06C7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1D9C56282A4262D4001C06C7 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -29,6 +31,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1D9C56372A4265CB001C06C7 /* GoogleAPIClientForREST_Drive in Frameworks */,
+				1D0B288C2A426EE600D3F7BF /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,6 +57,7 @@
 		1D9C56252A4262D4001C06C7 /* MySync */ = {
 			isa = PBXGroup;
 			children = (
+				1D0B288F2A42744700D3F7BF /* Info.plist */,
 				1D9C56262A4262D4001C06C7 /* AppDelegate.swift */,
 				1D9C56282A4262D4001C06C7 /* ViewController.swift */,
 				1D9C562A2A4262D6001C06C7 /* Assets.xcassets */,
@@ -81,6 +85,7 @@
 			name = MySync;
 			packageProductDependencies = (
 				1D9C56362A4265CB001C06C7 /* GoogleAPIClientForREST_Drive */,
+				1D0B288B2A426EE600D3F7BF /* GoogleSignIn */,
 			);
 			productName = MySync;
 			productReference = 1D9C56232A4262D4001C06C7 /* MySync.app */;
@@ -112,6 +117,7 @@
 			mainGroup = 1D9C561A2A4262D4001C06C7;
 			packageReferences = (
 				1D9C56352A4265CB001C06C7 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */,
+				1D0B288A2A426EE600D3F7BF /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 			);
 			productRefGroup = 1D9C56242A4262D4001C06C7 /* Products */;
 			projectDirPath = "";
@@ -277,10 +283,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MySync/MySync.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8CUD9B38Z6;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MySync/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -302,10 +311,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = MySync/MySync.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8CUD9B38Z6;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MySync/Info.plist;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -345,6 +357,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		1D0B288A2A426EE600D3F7BF /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
 		1D9C56352A4265CB001C06C7 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/google/google-api-objectivec-client-for-rest";
@@ -356,6 +376,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		1D0B288B2A426EE600D3F7BF /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1D0B288A2A426EE600D3F7BF /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
 		1D9C56362A4265CB001C06C7 /* GoogleAPIClientForREST_Drive */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 1D9C56352A4265CB001C06C7 /* XCRemoteSwiftPackageReference "google-api-objectivec-client-for-rest" */;
