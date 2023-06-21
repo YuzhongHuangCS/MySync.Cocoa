@@ -10,8 +10,43 @@ import GoogleSignIn
 import GoogleAPIClientForREST_Drive
 
 
-class ViewController: NSViewController {
-    var service: GTLRDriveService = GTLRDriveService()
+class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
+    var service = GTLRDriveService()
+    var rows = [[String]]()
+
+    @IBOutlet weak var driveTable: NSTableView!
+
+    func numberOfRows(in tableView: NSTableView) -> Int {
+        return rows.count
+    }
+
+    func tableView(
+        _ tableView: NSTableView,
+        viewFor tableColumn: NSTableColumn?,
+        row: Int
+    ) -> NSView? {
+        guard let cellView = tableView.makeView(withIdentifier:
+            (tableColumn?.identifier)!,
+            owner: self) as? NSTableCellView
+        else {
+            return nil
+        }
+
+        let col = tableView.tableColumns.firstIndex(of: tableColumn!)
+        cellView.textField!.stringValue = rows[row][col!]
+
+        return cellView
+    }
+
+    // Not used in View based NSTableview
+    func tableView(
+        _ tableView: NSTableView,
+        objectValueFor tableColumn: NSTableColumn?,
+        row: Int
+    ) -> Any? {
+        let col = tableView.tableColumns.firstIndex(of: tableColumn!)
+        return rows[row][col!]
+    }
 
     @IBAction func LoginClicked(_ sender: NSButton) {
         print("LoginClicked")
@@ -26,14 +61,25 @@ class ViewController: NSViewController {
 
     func listDirectory() async throws {
         let query = GTLRDriveQuery_FilesList.query()
-        //query.q = "'root' in parents"
-        query.q = "'1DC9vuuiDDMyLccaAH8KAf_Akrk1QQ7Pb' in parents"
+        query.q = "'root' in parents"
+        //query.q = "'1DC9vuuiDDMyLccaAH8KAf_Akrk1QQ7Pb' in parents"
+        //query.q = "'1b8bOEsE7LX6XGj7yZqchLW_0ykJqTLfL' in parents"
+        query.fields = "nextPageToken, files(name, mimeType, size, owners, id, parents)"
+
         repeat {
             let result = try await executeQueryAsync(query: query.copy() as! GTLRDriveQuery_FilesList)
-            print(result, "#Files", result.files!.count)
             for f in result.files! {
-                print(f)
+                rows.append([
+                    f.name!,
+                    f.mimeType!,
+                    f.size != nil ? String(format: "%.2f MB", Double(truncating: f.size!) / 1024.0 / 1024.0): "",
+                    (f.owners?.map({o in
+                        o.displayName! + " <" + o.emailAddress! + ">"
+                    }).joined(separator: "; "))!,
+                    f.identifier!
+                ])
             }
+            driveTable.reloadData()
             query.pageToken = result.nextPageToken
         } while (query.pageToken != nil)
     }
@@ -79,6 +125,4 @@ class ViewController: NSViewController {
         }
     }
 
-
 }
-
