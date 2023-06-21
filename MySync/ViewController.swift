@@ -15,6 +15,9 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
     var rows = [[String]]()
 
     @IBOutlet weak var driveTable: NSTableView!
+    @IBOutlet weak var rowCount: NSTextField!
+    @IBOutlet weak var pathField: NSTextField!
+    @IBOutlet weak var statusField: NSTextField!
 
     func numberOfRows(in tableView: NSTableView) -> Int {
         return rows.count
@@ -49,13 +52,15 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
     }
 
     @IBAction func LoginClicked(_ sender: NSButton) {
-        print("LoginClicked")
         Task {
             if self.service.authorizer == nil {
+                statusField.stringValue = "Init"
                 try await initDriveService()
             }
 
+            statusField.stringValue = "Loading"
             try await listDirectory()
+            statusField.stringValue = "Done"
         }
     }
 
@@ -80,6 +85,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
                 ])
             }
             driveTable.reloadData()
+            rowCount.stringValue = String(rows.count)
             query.pageToken = result.nextPageToken
         } while (query.pageToken != nil)
     }
