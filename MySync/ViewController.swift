@@ -13,6 +13,7 @@ import GoogleAPIClientForREST_Drive
 class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
     let FOLDER_MIME = "application/vnd.google-apps.folder"
     let DRIVE_SERVICE = GTLRDriveService()
+    var PATH = [[String?]]()
     var START_TIME = TimeInterval()
     var Rows = [[String]]()
 
@@ -58,15 +59,49 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
                 try await initDriveService()
             }
 
+            PATH.removeAll(keepingCapacity: true)
+            PATH.append(["/", nil])
+            pathField.stringValue = PATH.map {$0[0]!}.joined(separator: "/")
+
             statusField.stringValue = "Loading"
             try await listDirectory(nil)
             statusField.stringValue = "Done"
         }
     }
 
+    @IBAction func ParentClicked(_ sender: NSButton) {
+        Task {
+            if PATH.count > 1 {
+                PATH.remove(at: PATH.count - 1)
+                pathField.stringValue = PATH.map {$0[0]!}.joined(separator: "/")
+
+                statusField.stringValue = "Loading"
+                try await listDirectory(PATH.last![1])
+                statusField.stringValue = "Done"
+            }
+        }
+    }
+
+    @IBAction func tableDoubleClicked(_ sender: NSTableView) {
+        Task {
+            if (driveTable.numberOfSelectedRows > 0) {
+                let row = Rows[driveTable.selectedRow]
+                if row[1] == FOLDER_MIME {
+                    let id = row[4]
+                    PATH.append([row[0], id])
+                    pathField.stringValue = PATH.map {$0[0]!}.joined(separator: "/")
+
+                    statusField.stringValue = "Loading"
+                    try await listDirectory(id)
+                    statusField.stringValue = "Done"
+                }
+            }
+        }
+    }
+
     func listDirectory(_ parent: String?) async throws {
         START_TIME = Date().timeIntervalSince1970
-        var start_time = START_TIME
+        let start_time = START_TIME
         let fileList = GTLRDriveQuery_FilesList.query()
 
         Rows.removeAll(keepingCapacity: true)

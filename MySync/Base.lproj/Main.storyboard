@@ -884,6 +884,7 @@
                                                 </tableColumn>
                                             </tableColumns>
                                             <connections>
+                                                <action trigger="doubleAction" selector="tableDoubleClicked:" target="XfG-lQ-9wD" id="mVs-9i-99N"/>
                                                 <outlet property="dataSource" destination="XfG-lQ-9wD" id="mUx-bJ-Wce"/>
                                                 <outlet property="delegate" destination="XfG-lQ-9wD" id="yxH-3Q-LOq"/>
                                             </connections>
@@ -921,6 +922,9 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system" size="16"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="ParentClicked:" target="XfG-lQ-9wD" id="dM6-Gk-p0T"/>
+                                </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="E6s-mX-iBd">
                                 <rect key="frame" x="165" y="5" width="100" height="40"/>
@@ -975,7 +979,7 @@
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Mlg-TC-VgX">
                                 <rect key="frame" x="615" y="10" width="50" height="24"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <textFieldCell key="cell" controlSize="large" lineBreakMode="clipping" title="null" id="I7h-Pr-006">
                                     <font key="font" metaFont="system" size="16"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
