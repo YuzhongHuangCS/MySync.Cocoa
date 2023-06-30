@@ -933,6 +933,9 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system" size="16"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="DownloadClicked:" target="XfG-lQ-9wD" id="Qse-6O-UnN"/>
+                                </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Osu-nu-TGj">
                                 <rect key="frame" x="265" y="5" width="80" height="40"/>
@@ -941,6 +944,9 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system" size="16"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="UploadClicked:" target="XfG-lQ-9wD" id="4vs-xX-f6k"/>
+                                </connections>
                             </button>
                             <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="AzO-h9-fDs">
                                 <rect key="frame" x="345" y="5" width="80" height="40"/>
@@ -949,6 +955,9 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system" size="16"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="DeleteClicked:" target="XfG-lQ-9wD" id="pk0-mx-NEf"/>
+                                </connections>
                             </button>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="1Vn-Lp-Qig">
                                 <rect key="frame" x="425" y="10" width="50" height="24"/>
@@ -988,7 +997,7 @@
                             </textField>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4QX-Fe-CEZ">
                                 <rect key="frame" x="648" y="10" width="62" height="24"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxY="YES"/>
                                 <textFieldCell key="cell" controlSize="large" lineBreakMode="clipping" alignment="right" title="Ready" id="DEq-TU-QXh">
                                     <font key="font" metaFont="system" size="16"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
@@ -1002,6 +1011,9 @@
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system" size="16"/>
                                 </buttonCell>
+                                <connections>
+                                    <action selector="LogoutClicked:" target="XfG-lQ-9wD" id="HNH-Mj-mHn"/>
+                                </connections>
                             </button>
                         </subviews>
                     </view>

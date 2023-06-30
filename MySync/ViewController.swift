@@ -82,6 +82,25 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         }
     }
 
+    @IBAction func DownloadClicked(_ sender: NSButton) {
+
+    }
+
+    @IBAction func UploadClicked(_ sender: NSButton) {
+
+    }
+
+    @IBAction func DeleteClicked(_ sender: NSButton) {
+
+    }
+
+    @IBAction func LogoutClicked(_ sender: NSButton) {
+        GIDSignIn.sharedInstance.signOut()
+        UserDefaults.standard.removeObject(forKey: "ROOT_ID")
+        UserDefaults.standard.removeObject(forKey: "ROOT_QUERY")
+        NSApplication.shared.windows.first!.close()
+    }
+
     @IBAction func tableDoubleClicked(_ sender: NSTableView) {
         Task {
             if (driveTable.numberOfSelectedRows > 0) {
@@ -180,22 +199,20 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
     }
 
     func getRootID() async throws -> String {
-        let defaults = UserDefaults.standard
-        var ROOT_ID = defaults.string(forKey: "ROOT_ID")
+        var ROOT_ID = UserDefaults.standard.string(forKey: "ROOT_ID")
 
         if ROOT_ID == nil {
             let query = GTLRDriveQuery_FilesGet.query(withFileId: "root")
             let result = try await executeQueryAsync(query: query) as! GTLRDrive_File
             ROOT_ID = result.identifier!
-            defaults.set(ROOT_ID, forKey: "ROOT_ID")
+            UserDefaults.standard.set(ROOT_ID, forKey: "ROOT_ID")
         }
 
         return ROOT_ID!
     }
 
     func getRootQuery() async throws -> String {
-        let defaults = UserDefaults.standard
-        var ROOT_QUERY = defaults.string(forKey: "ROOT_QUERY")
+        var ROOT_QUERY = UserDefaults.standard.string(forKey: "ROOT_QUERY")
         if ROOT_QUERY != nil {
             return ROOT_QUERY!
         }
@@ -240,7 +257,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         ROOT_QUERY = parentList.map{"not '\($0)' in parents"}.joined(separator: " and ")
         print(ROOT_QUERY!)
 
-        defaults.set(ROOT_QUERY, forKey: "ROOT_QUERY")
+        UserDefaults.standard.set(ROOT_QUERY, forKey: "ROOT_QUERY")
         return ROOT_QUERY!
     }
 
