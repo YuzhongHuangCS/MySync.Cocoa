@@ -141,24 +141,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
                         for url in panel.urls {
                             group.addTask {
                                 do {
-                                    let data = try Data(contentsOf: url)
-                                    let mime = UTType(filenameExtension: url.pathExtension)?.preferredMIMEType ?? "application/octet-stream"
-
-                                    let driveFile = GTLRDrive_File()
-                                    driveFile.name = url.lastPathComponent
-                                    driveFile.mimeType = mime
-                                    if await self.PATH.last![1] != nil {
-                                        driveFile.parents = await [self.PATH.last![1]!]
-                                    }
-
-                                    let uploadParameters = GTLRUploadParameters(data: data, mimeType: mime)
-                                    let query = GTLRDriveQuery_FilesCreate.query(withObject: driveFile, uploadParameters: uploadParameters)
-                                    query.fields = "id"
-                                    query.bodyObject = driveFile
-
-
-                                    let response = try await self.executeQueryAsync(query: query) as! GTLRDrive_File
-                                    print("Upload successful. \(url.path) File ID: \(response.identifier!)\n")
+                                    try await self.uploadFile(url)
                                 } catch {
                                     print("uploadFile error:", error)
                                 }
@@ -175,6 +158,26 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
                 alert.runModal()
             }
         }
+    }
+
+    func uploadFile(_ url: URL) async throws {
+        let data = try Data(contentsOf: url)
+        let mime = UTType(filenameExtension: url.pathExtension)?.preferredMIMEType ?? "application/octet-stream"
+
+        let driveFile = GTLRDrive_File()
+        driveFile.name = url.lastPathComponent
+        driveFile.mimeType = mime
+        if self.PATH.last![1] != nil {
+            driveFile.parents = [self.PATH.last![1]!]
+        }
+
+        let uploadParameters = GTLRUploadParameters(data: data, mimeType: mime)
+        let query = GTLRDriveQuery_FilesCreate.query(withObject: driveFile, uploadParameters: uploadParameters)
+        query.fields = "id"
+        query.bodyObject = driveFile
+
+        let response = try await self.executeQueryAsync(query: query) as! GTLRDrive_File
+        print("Upload successful. \(url.path) File ID: \(response.identifier!)\n")
     }
 
     @IBAction func DeleteClicked(_ sender: NSButton) {
