@@ -446,6 +446,16 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         print("\(parent): \(count)")
     }
 
+    @objc func copy(_ sender: AnyObject) {
+        if (driveTable.numberOfSelectedRows > 0) {
+            let id = Rows[driveTable.selectedRow][4]
+
+            let pasteBoard = NSPasteboard.general
+            pasteBoard.clearContents()
+            pasteBoard.setString(id, forType: .string)
+        }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
