@@ -322,7 +322,14 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
                     ])
                 }
             }
+
+            let prevIndexes = driveTable.selectedRowIndexes
             driveTable.reloadData()
+
+            // Keep selection only for subsequent pages
+            if fileList.pageToken != nil {
+                driveTable.selectRowIndexes(prevIndexes, byExtendingSelection: true)
+            }
             rowCount.stringValue = String(Rows.count)
             fileList.pageToken = filesResult.nextPageToken
         } while (fileList.pageToken != nil)
