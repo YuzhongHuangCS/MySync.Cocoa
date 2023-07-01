@@ -8,6 +8,7 @@
 import Cocoa
 import GoogleSignIn
 import GoogleAPIClientForREST_Drive
+import UniformTypeIdentifiers
 
 
 class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
@@ -83,15 +84,105 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
     }
 
     @IBAction func DownloadClicked(_ sender: NSButton) {
+        if self.DRIVE_SERVICE.authorizer != nil && driveTable.numberOfSelectedRows > 0 {
+            let panel = NSOpenPanel();
+            panel.canChooseFiles = false
+            panel.canChooseDirectories = true
+            panel.canCreateDirectories = true
 
+            if panel.runModal() == NSApplication.ModalResponse.OK {
+                statusField.stringValue = "Downloading"
+
+                for rowIndex in driveTable.selectedRowIndexes {
+                    Task {
+                        let row = Rows[rowIndex]
+                        try await downloadFile(row[4], NSString.path(withComponents: [panel.url!.path, row[0]]))
+                    }
+                }
+
+                statusField.stringValue = "Done"
+            }
+        } else {
+            let alert = NSAlert()
+            alert.messageText = "Please Login First"
+            alert.alertStyle = NSAlert.Style.critical
+            alert.runModal()
+        }
+    }
+
+    func downloadFile(_ fileId: String, _ filename: String) async throws {
+        let query = GTLRDriveQuery_FilesGet.queryForMedia(withFileId: fileId)
+        let data = try await executeQueryAsync(query: query) as! GTLRDataObject
+
+        try data.data.write(to: NSURL.fileURL(withPath: filename))
+        print("\(filename): Download Complete")
     }
 
     @IBAction func UploadClicked(_ sender: NSButton) {
+        Task {
+            if self.DRIVE_SERVICE.authorizer != nil {
+                let panel = NSOpenPanel();
+                panel.canChooseFiles = true
+                panel.canChooseDirectories = false
+                panel.allowsMultipleSelection = true
 
+                if panel.runModal() == NSApplication.ModalResponse.OK {
+                    statusField.stringValue = "Uploading"
+
+                    for url in panel.urls {
+                        let data = try Data(contentsOf: url)
+                        var mime = UTType(filenameExtension: url.pathExtension)?.preferredMIMEType ?? "application/octet-stream"
+
+                        let driveFile = GTLRDrive_File()
+                        driveFile.name = url.lastPathComponent
+                        driveFile.mimeType = mime
+                        if PATH.last![1] != nil {
+                            driveFile.parents = [PATH.last![1]!]
+                        }
+
+                        let uploadParameters = GTLRUploadParameters(data: data, mimeType: mime)
+                        let query = GTLRDriveQuery_FilesCreate.query(withObject: driveFile, uploadParameters: uploadParameters)
+                        query.fields = "id"
+                        query.bodyObject = driveFile
+
+                        let response = try await executeQueryAsync(query: query) as! GTLRDrive_File
+                        print("Upload successful. \(url.path) File ID: \(response.identifier!)\n")
+                    }
+
+                    statusField.stringValue = "Done"
+                }
+            } else {
+                let alert = NSAlert()
+                alert.messageText = "Please Login First"
+                alert.alertStyle = NSAlert.Style.critical
+                alert.runModal()
+            }
+        }
     }
 
     @IBAction func DeleteClicked(_ sender: NSButton) {
+        Task {
+            if self.DRIVE_SERVICE.authorizer != nil && driveTable.numberOfSelectedRows > 0 {
+                statusField.stringValue = "Deleting"
+                for rowIndex in driveTable.selectedRowIndexes {
+                    let row = Rows[rowIndex]
+                    if row[1] != FOLDER_MIME {
+                        print("del: \(row[0])")
+                        let driveFile = GTLRDrive_File()
+                        driveFile.trashed = true
 
+                        let query = GTLRDriveQuery_FilesUpdate.query(withObject: driveFile, fileId: row[4], uploadParameters: nil)
+                        _ = try await executeQueryAsync(query: query)
+                    }
+                }
+                statusField.stringValue = "Done"
+            } else {
+                let alert = NSAlert()
+                alert.messageText = "Please Login First"
+                alert.alertStyle = NSAlert.Style.critical
+                alert.runModal()
+            }
+        }
     }
 
     @IBAction func LogoutClicked(_ sender: NSButton) {
@@ -141,11 +232,10 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         } else {
             fileList.q = "'\(parent!)' in parents"
         }
-
         fileList.fields = "nextPageToken, files(name, mimeType, size, owners, id, parents)"
 
         repeat {
-            let filesResult = try await executeQueryAsync(query: fileList.copy() as! GTLRDriveQuery_FilesList) as! GTLRDrive_FileList
+            let filesResult = try await executeQueryAsync(query: fileList) as! GTLRDrive_FileList
             if START_TIME > start_time {
                 break
             }
@@ -171,7 +261,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
 
     func executeQueryAsync(query: GTLRDriveQuery) async throws -> GTLRObject {
         try await withCheckedThrowingContinuation { continuation in
-            self.DRIVE_SERVICE.executeQuery(query) { (ticket, result, error) in
+            self.DRIVE_SERVICE.executeQuery(query.copy() as! GTLRDriveQuery ) { (ticket, result, error) in
                 continuation.resume(with: Result<GTLRObject, Error> {
                     if error != nil {
                         throw error!
@@ -227,7 +317,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
 
             repeat {
                 do {
-                    let foldersResult = try await executeQueryAsync(query: folderList.copy() as! GTLRDriveQuery_FilesList) as! GTLRDrive_FileList
+                    let foldersResult = try await executeQueryAsync(query: folderList) as! GTLRDrive_FileList
                     for f in foldersResult.files! {
                         group.addTask {
                             do {
@@ -268,7 +358,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         var count = 0
 
         repeat {
-            let filesResult = try await executeQueryAsync(query: fileList.copy() as! GTLRDriveQuery_FilesList) as! GTLRDrive_FileList
+            let filesResult = try await executeQueryAsync(query: fileList) as! GTLRDrive_FileList
             count += filesResult.files!.count
             fileList.pageToken = filesResult.nextPageToken
         } while (fileList.pageToken != nil)
