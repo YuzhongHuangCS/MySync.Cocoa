@@ -131,7 +131,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
             if self.DRIVE_SERVICE.authorizer != nil {
                 let panel = NSOpenPanel();
                 panel.canChooseFiles = true
-                panel.canChooseDirectories = false
+                panel.canChooseDirectories = true
                 panel.allowsMultipleSelection = true
 
                 if panel.runModal() == NSApplication.ModalResponse.OK {
@@ -139,11 +139,24 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
 
                     await withTaskGroup(of: Void.self) { group in
                         for url in panel.urls {
-                            group.addTask {
-                                do {
-                                    try await self.uploadFile(url)
-                                } catch {
-                                    print("uploadFile error:", error)
+                            if isDir(url.path) {
+                                let uploads = await walkDirectory(url.path, self.PATH.last![1])
+                                for req in uploads {
+                                    group.addTask {
+                                        do {
+                                            try await self.uploadFile(NSURL.fileURL(withPath: req[0]), req[1])
+                                        } catch {
+                                            print("uploadFile error:", error)
+                                        }
+                                    }
+                                }
+                            } else {
+                                group.addTask {
+                                    do {
+                                        try await self.uploadFile(url, self.PATH.last![1])
+                                    } catch {
+                                        print("uploadFile error:", error)
+                                    }
                                 }
                             }
                         }
@@ -160,21 +173,55 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         }
     }
 
-    func uploadFile(_ url: URL) async throws {
+    func isDir(_ path: String) -> Bool {
+        var resultStorage: ObjCBool = false
+        FileManager.default.fileExists(atPath: path, isDirectory: &resultStorage)
+        return resultStorage.boolValue
+    }
+
+    func walkDirectory(_ path: String, _ parent: String?) async -> [[String]] {
+        var ret = [[String]]()
+        do {
+            let driveFolder = GTLRDrive_File()
+            driveFolder.name = NSURL.fileURL(withPath: path).lastPathComponent
+            driveFolder.mimeType = FOLDER_MIME
+            if parent != nil {
+                driveFolder.parents = [parent!]
+            }
+            let query = GTLRDriveQuery_FilesCreate.query(withObject: driveFolder, uploadParameters: nil)
+            query.fields = "id"
+            let response = try await self.executeQueryAsync(query: query) as! GTLRDrive_File
+            print("Create successful. \(path) File ID: \(response.identifier!)")
+
+            let names = try FileManager.default.contentsOfDirectory(atPath: path)
+            for name in names {
+                let p = NSString.path(withComponents: [path, name])
+                if isDir(p) {
+                    ret.append(contentsOf: await walkDirectory(p, response.identifier!))
+                } else {
+                    ret.append([p, response.identifier!])
+                }
+            }
+        } catch {
+            print("walkDirectory error:", error)
+        }
+        return ret
+    }
+
+    func uploadFile(_ url: URL, _ parent: String?) async throws {
         let data = try Data(contentsOf: url)
         let mime = UTType(filenameExtension: url.pathExtension)?.preferredMIMEType ?? "application/octet-stream"
 
         let driveFile = GTLRDrive_File()
         driveFile.name = url.lastPathComponent
         driveFile.mimeType = mime
-        if self.PATH.last![1] != nil {
-            driveFile.parents = [self.PATH.last![1]!]
+        if parent != nil {
+            driveFile.parents = [parent!]
         }
 
         let uploadParameters = GTLRUploadParameters(data: data, mimeType: mime)
         let query = GTLRDriveQuery_FilesCreate.query(withObject: driveFile, uploadParameters: uploadParameters)
         query.fields = "id"
-        query.bodyObject = driveFile
 
         let response = try await self.executeQueryAsync(query: query) as! GTLRDrive_File
         print("Upload successful. \(url.path) File ID: \(response.identifier!)\n")
