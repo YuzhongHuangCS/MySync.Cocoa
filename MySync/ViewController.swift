@@ -84,29 +84,37 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
     }
 
     @IBAction func DownloadClicked(_ sender: NSButton) {
-        if self.DRIVE_SERVICE.authorizer != nil && driveTable.numberOfSelectedRows > 0 {
-            let panel = NSOpenPanel();
-            panel.canChooseFiles = false
-            panel.canChooseDirectories = true
-            panel.canCreateDirectories = true
+        Task {
+            if self.DRIVE_SERVICE.authorizer != nil && driveTable.numberOfSelectedRows > 0 {
+                let panel = NSOpenPanel();
+                panel.canChooseFiles = false
+                panel.canChooseDirectories = true
+                panel.canCreateDirectories = true
 
-            if panel.runModal() == NSApplication.ModalResponse.OK {
-                statusField.stringValue = "Downloading"
+                if panel.runModal() == NSApplication.ModalResponse.OK {
+                    statusField.stringValue = "Downloading"
 
-                for rowIndex in driveTable.selectedRowIndexes {
-                    Task {
-                        let row = Rows[rowIndex]
-                        try await downloadFile(row[4], NSString.path(withComponents: [panel.url!.path, row[0]]))
+                    await withTaskGroup(of: Void.self) { group in
+                        for rowIndex in driveTable.selectedRowIndexes {
+                            group.addTask {
+                                do {
+                                    let row = await self.Rows[rowIndex]
+                                    try await self.downloadFile(row[4], NSString.path(withComponents: [panel.url!.path, row[0]]))
+                                } catch {
+                                    print("downloadFile error:", error)
+                                }
+                            }
+                        }
                     }
-                }
 
-                statusField.stringValue = "Done"
+                    statusField.stringValue = "Done"
+                }
+            } else {
+                let alert = NSAlert()
+                alert.messageText = "Please Login First"
+                alert.alertStyle = NSAlert.Style.critical
+                alert.runModal()
             }
-        } else {
-            let alert = NSAlert()
-            alert.messageText = "Please Login First"
-            alert.alertStyle = NSAlert.Style.critical
-            alert.runModal()
         }
     }
 
@@ -129,24 +137,33 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
                 if panel.runModal() == NSApplication.ModalResponse.OK {
                     statusField.stringValue = "Uploading"
 
-                    for url in panel.urls {
-                        let data = try Data(contentsOf: url)
-                        var mime = UTType(filenameExtension: url.pathExtension)?.preferredMIMEType ?? "application/octet-stream"
+                    await withTaskGroup(of: Void.self) { group in
+                        for url in panel.urls {
+                            group.addTask {
+                                do {
+                                    let data = try Data(contentsOf: url)
+                                    let mime = UTType(filenameExtension: url.pathExtension)?.preferredMIMEType ?? "application/octet-stream"
 
-                        let driveFile = GTLRDrive_File()
-                        driveFile.name = url.lastPathComponent
-                        driveFile.mimeType = mime
-                        if PATH.last![1] != nil {
-                            driveFile.parents = [PATH.last![1]!]
+                                    let driveFile = GTLRDrive_File()
+                                    driveFile.name = url.lastPathComponent
+                                    driveFile.mimeType = mime
+                                    if await self.PATH.last![1] != nil {
+                                        driveFile.parents = await [self.PATH.last![1]!]
+                                    }
+
+                                    let uploadParameters = GTLRUploadParameters(data: data, mimeType: mime)
+                                    let query = GTLRDriveQuery_FilesCreate.query(withObject: driveFile, uploadParameters: uploadParameters)
+                                    query.fields = "id"
+                                    query.bodyObject = driveFile
+
+
+                                    let response = try await self.executeQueryAsync(query: query) as! GTLRDrive_File
+                                    print("Upload successful. \(url.path) File ID: \(response.identifier!)\n")
+                                } catch {
+                                    print("uploadFile error:", error)
+                                }
+                            }
                         }
-
-                        let uploadParameters = GTLRUploadParameters(data: data, mimeType: mime)
-                        let query = GTLRDriveQuery_FilesCreate.query(withObject: driveFile, uploadParameters: uploadParameters)
-                        query.fields = "id"
-                        query.bodyObject = driveFile
-
-                        let response = try await executeQueryAsync(query: query) as! GTLRDrive_File
-                        print("Upload successful. \(url.path) File ID: \(response.identifier!)\n")
                     }
 
                     statusField.stringValue = "Done"
@@ -164,6 +181,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         Task {
             if self.DRIVE_SERVICE.authorizer != nil && driveTable.numberOfSelectedRows > 0 {
                 statusField.stringValue = "Deleting"
+
                 for rowIndex in driveTable.selectedRowIndexes {
                     let row = Rows[rowIndex]
                     if row[1] != FOLDER_MIME {
@@ -175,6 +193,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
                         _ = try await executeQueryAsync(query: query)
                     }
                 }
+
                 statusField.stringValue = "Done"
             } else {
                 let alert = NSAlert()
