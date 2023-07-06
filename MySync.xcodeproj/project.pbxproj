@@ -294,6 +294,7 @@
 				DEVELOPMENT_TEAM = 8CUD9B38Z6;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MySync/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -322,6 +323,7 @@
 				DEVELOPMENT_TEAM = 8CUD9B38Z6;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MySync/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.developer-tools";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
