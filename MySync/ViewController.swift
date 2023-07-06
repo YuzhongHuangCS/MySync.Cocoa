@@ -22,6 +22,7 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
     @IBOutlet weak var rowCount: NSTextField!
     @IBOutlet weak var pathField: NSTextField!
     @IBOutlet weak var statusField: NSTextField!
+    @IBOutlet var mainView: NSView!
 
     func numberOfRows(in tableView: NSTableView) -> Int {
         return Rows.count
@@ -460,6 +461,11 @@ class ViewController: NSViewController, NSTableViewDataSource, NSTableViewDelega
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        // Hack: Resize window to activate auto column resizing
+        let oldSize = mainView.frame.size
+        let newSize = NSMakeSize(100, 400)
+        mainView.setFrameSize(newSize)
+        mainView.setFrameSize(oldSize)
     }
 
     override var representedObject: Any? {
